@@ -64,3 +64,12 @@ export async function getSessions(): Promise<ExtensionResponse<Session[]>> {
     type: "GET_SESSIONS",
   });
 }
+
+export async function importSessions(
+  sessions: Session[],
+): Promise<ExtensionResponse<{ imported: number; skipped: number }>> {
+  return sendMessage<{ imported: number; skipped: number }>({
+    type: "IMPORT_SESSIONS",
+    payload: { sessions },
+  });
+}

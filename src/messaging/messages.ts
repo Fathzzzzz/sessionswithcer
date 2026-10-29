@@ -1,10 +1,13 @@
+import type { Session } from "../types/session";
+
 export type MessageType =
   | "CAPTURE_SESSION"
   | "RESTORE_SESSION"
   | "DELETE_SESSION"
   | "UPDATE_LABEL"
   | "RECAPTURE_SESSION"
-  | "GET_SESSIONS";
+  | "GET_SESSIONS"
+  | "IMPORT_SESSIONS";
 
 export interface ExtensionMessage {
   type: MessageType;
@@ -33,6 +36,10 @@ export interface UpdateLabelPayload {
 export interface RecapturePayload {
   sessionId: string;
   tabId: number;
+}
+
+export interface ImportSessionsPayload {
+  sessions: Session[];
 }
 
 export interface ExtensionResponse<T = unknown> {

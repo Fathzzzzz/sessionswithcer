@@ -6,6 +6,11 @@ import {
   updateLabel,
   recaptureSession,
 } from "../messaging/client";
+import {
+  buildExportFile,
+  downloadJson,
+  makeExportFilename,
+} from "../services/export-import.service";
 
 interface Props {
   session: Session;
@@ -76,6 +81,11 @@ export function SessionCard({
     }
   }
 
+  function handleExport() {
+    const data = buildExportFile([session]);
+    downloadJson(data, makeExportFilename([session]));
+  }
+
   const savedDate = new Date(session.savedAt).toLocaleString();
   const lastUsed = session.lastUsedAt
     ? new Date(session.lastUsedAt).toLocaleString()
@@ -134,6 +144,13 @@ export function SessionCard({
           disabled={busy !== null}
         >
           Rename
+        </button>
+        <button
+          className="btn btn-secondary btn-sm"
+          onClick={handleExport}
+          disabled={busy !== null}
+        >
+          Export
         </button>
         <button
           className="btn btn-danger btn-sm"

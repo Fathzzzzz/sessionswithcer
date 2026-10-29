@@ -59,3 +59,30 @@ export async function getSession(sessionId: string): Promise<Session | null> {
   const sessions = await getAllSessions();
   return sessions.find((s) => s.id === sessionId) ?? null;
 }
+
+/**
+ * Import sessions, skipping any whose ID already exists.
+ * Returns count of imported and skipped.
+ */
+export async function bulkImportSessions(
+  incoming: Session[],
+): Promise<{ imported: number; skipped: number }> {
+  const existing = await getAllSessions();
+  const existingIds = new Set(existing.map((s) => s.id));
+
+  let imported = 0;
+  let skipped = 0;
+
+  for (const session of incoming) {
+    if (existingIds.has(session.id)) {
+      skipped++;
+    } else {
+      existing.push(session);
+      existingIds.add(session.id);
+      imported++;
+    }
+  }
+
+  await chrome.storage.local.set({ [STORAGE_KEY]: existing });
+  return { imported, skipped };
+}

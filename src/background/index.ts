@@ -6,6 +6,7 @@ import type {
   DeletePayload,
   UpdateLabelPayload,
   RecapturePayload,
+  ImportSessionsPayload,
 } from "../messaging/messages";
 import {
   captureSession,
@@ -16,6 +17,7 @@ import {
   deleteSession,
   updateSession,
   getAllSessions,
+  bulkImportSessions,
 } from "../storage/session.storage";
 
 chrome.runtime.onMessage.addListener(
@@ -61,6 +63,12 @@ chrome.runtime.onMessage.addListener(
           case "GET_SESSIONS": {
             const sessions = await getAllSessions();
             sendResponse({ success: true, data: sessions });
+            break;
+          }
+          case "IMPORT_SESSIONS": {
+            const { sessions } = message.payload as ImportSessionsPayload;
+            const result = await bulkImportSessions(sessions);
+            sendResponse({ success: true, data: result });
             break;
           }
           default:

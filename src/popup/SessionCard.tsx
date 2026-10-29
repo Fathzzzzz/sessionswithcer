@@ -1,0 +1,148 @@
+import { useState } from "react";
+import type { Session } from "../types/session";
+import {
+  restoreSession,
+  deleteSession,
+  updateLabel,
+  recaptureSession,
+} from "../messaging/client";
+
+interface Props {
+  session: Session;
+  tabId: number;
+  onUpdate: () => void;
+  onRequestConfirm: (message: string, action: () => void) => void;
+}
+
+export function SessionCard({
+  session,
+  tabId,
+  onUpdate,
+  onRequestConfirm,
+}: Props) {
+  const [renaming, setRenaming] = useState(false);
+  const [newLabel, setNewLabel] = useState(session.label);
+  const [busy, setBusy] = useState<string | null>(null);
+
+  async function handleSwitch() {
+    setBusy("switch");
+    try {
+      await restoreSession(session.id, tabId);
+      onUpdate();
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function handleDelete() {
+    onRequestConfirm(
+      `Delete session "${session.label}"?`,
+      async () => {
+        setBusy("delete");
+        try {
+          await deleteSession(session.id);
+          onUpdate();
+        } finally {
+          setBusy(null);
+        }
+      },
+    );
+  }
+
+  async function handleRecapture() {
+    setBusy("recapture");
+    try {
+      await recaptureSession(session.id, tabId);
+      onUpdate();
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function handleRename() {
+    const trimmed = newLabel.trim();
+    if (!trimmed || trimmed === session.label) {
+      setRenaming(false);
+      setNewLabel(session.label);
+      return;
+    }
+    setBusy("rename");
+    try {
+      await updateLabel(session.id, trimmed);
+      setRenaming(false);
+      onUpdate();
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  const savedDate = new Date(session.savedAt).toLocaleString();
+  const lastUsed = session.lastUsedAt
+    ? new Date(session.lastUsedAt).toLocaleString()
+    : "Never";
+
+  return (
+    <div className="session-card">
+      <div className="session-header">
+        {renaming ? (
+          <input
+            className="rename-input"
+            value={newLabel}
+            onChange={(e) => setNewLabel(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleRename();
+              if (e.key === "Escape") {
+                setRenaming(false);
+                setNewLabel(session.label);
+              }
+            }}
+            onBlur={handleRename}
+            autoFocus
+          />
+        ) : (
+          <span className="session-label">{session.label}</span>
+        )}
+        <span className="cookie-count">{session.cookieCount} cookies</span>
+      </div>
+
+      <div className="session-meta">
+        <span>Saved: {savedDate}</span>
+        <span>Last used: {lastUsed}</span>
+      </div>
+
+      <div className="session-actions">
+        <button
+          className="btn btn-primary btn-sm"
+          onClick={handleSwitch}
+          disabled={busy !== null}
+        >
+          {busy === "switch" ? "Switching…" : "Switch"}
+        </button>
+        <button
+          className="btn btn-secondary btn-sm"
+          onClick={handleRecapture}
+          disabled={busy !== null}
+        >
+          {busy === "recapture" ? "Updating…" : "Update"}
+        </button>
+        <button
+          className="btn btn-secondary btn-sm"
+          onClick={() => {
+            setRenaming(true);
+            setNewLabel(session.label);
+          }}
+          disabled={busy !== null}
+        >
+          Rename
+        </button>
+        <button
+          className="btn btn-danger btn-sm"
+          onClick={handleDelete}
+          disabled={busy !== null}
+        >
+          {busy === "delete" ? "Deleting…" : "Delete"}
+        </button>
+      </div>
+    </div>
+  );
+}

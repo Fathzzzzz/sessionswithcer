@@ -38,13 +38,13 @@ export function SaveButton({ tabId, domain, onSaved }: Props) {
   return (
     <div className="save-section">
       <div className="save-domain">
-        Current: <strong>{domain}</strong>
+        CURRENT : <strong>{domain.toUpperCase()}</strong>
       </div>
       <div className="save-row">
         <input
           type="text"
           className="save-input"
-          placeholder='Label (e.g. "Work Account")'
+          placeholder='Label (e.g "Work Account")'
           value={label}
           onChange={(e) => setLabel(e.target.value)}
           onKeyDown={(e) => {
@@ -53,11 +53,11 @@ export function SaveButton({ tabId, domain, onSaved }: Props) {
           disabled={saving}
         />
         <button
-          className="btn btn-primary"
+          className="btn btn-save"
           onClick={handleSave}
           disabled={saving || !label.trim()}
         >
-          {saving ? "Saving…" : "Save Session"}
+          {saving ? "SAVING…" : "SAVE"}
         </button>
       </div>
       {error && <div className="error-text">{error}</div>}

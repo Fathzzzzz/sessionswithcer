@@ -59,16 +59,16 @@ export function ImportExportBar({ sessions, onImportReady }: Props) {
   return (
     <div className="import-export-bar">
       <button
-        className="btn btn-secondary btn-sm"
+        className="btn btn-dark"
         onClick={handleExportAll}
         disabled={sessions.length === 0}
         title="Export all sessions to JSON"
       >
-        ↓ Export All
+        EXPORT ALL ↑
       </button>
 
-      <label className="btn btn-secondary btn-sm import-label">
-        {importing ? "Reading…" : "↑ Import"}
+      <label className="btn btn-dark import-label">
+        {importing ? "READING…" : "IMPORT ↓"}
         <input
           ref={fileRef}
           type="file"

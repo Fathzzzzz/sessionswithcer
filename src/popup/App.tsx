@@ -20,7 +20,9 @@ export function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1 className="app-title">Session Switcher</h1>
+        <h1 className="app-title">
+          SES<span className="app-title-accent">S</span>ION SWITCHER
+        </h1>
       </header>
 
       {!isValidTab ? (
@@ -35,8 +37,6 @@ export function App() {
             sessions={sessions}
             onImportReady={(incoming) => setImportPreview(incoming)}
           />
-
-          <div className="divider" />
 
           {loading ? (
             <div className="loading">Loading sessions…</div>
@@ -68,12 +68,6 @@ export function App() {
           onImported={refresh}
         />
       )}
-
-      <footer className="app-footer">
-        <span className="warning-text">
-          ⚠ Sessions contain sensitive auth data
-        </span>
-      </footer>
     </div>
   );
 }

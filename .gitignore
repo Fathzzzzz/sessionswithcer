@@ -1,0 +1,2 @@
+# Konfigurasi watchdog lokal (dibuat per-mesin, jangan di-commit)
+watchdog.yml
